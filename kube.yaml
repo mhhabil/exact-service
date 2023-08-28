@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "10"
+  creationTimestamp: "2022-02-25T09:43:03Z"
+  generation: 11
+  labels:
+    app: gic-emr-backend
+  name: gic-emr-backend
+  namespace: default
+  resourceVersion: "9529176"
+  uid: 060a5f8c-bbfa-42b4-9a47-02d5cad9118e
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 3
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: gic-emr-backend
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: gic-emr-backend
+    spec:
+      volumes:
+      - name: google-cloud-key
+        secret:
+          secretName: gcloud-healthcare-key
+      containers:
+      - image: asia-southeast2-docker.pkg.dev/hospital-bigdata/gic-emr/gic-emr-backend:v2.0.6
+        imagePullPolicy: IfNotPresent
+        name: gic-emr-backend
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - name: google-cloud-key
+          mountPath: /var/secrets/google
+        env:
+        - name: GOOGLE_APPLICATION_CREDENTIALS
+          value: /var/secrets/google/key.json
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+status:
+  availableReplicas: 3
+  conditions:
+  - lastTransitionTime: "2022-03-14T03:51:47Z"
+    lastUpdateTime: "2022-03-14T03:51:47Z"
+    message: Deployment has minimum availability.
+    reason: MinimumReplicasAvailable
+    status: "True"
+    type: Available
+  - lastTransitionTime: "2022-02-25T09:43:03Z"
+    lastUpdateTime: "2022-03-15T09:40:36Z"
+    message: ReplicaSet "gic-emr-backend-7659f84c4c" has successfully progressed.
+    reason: NewReplicaSetAvailable
+    status: "True"
+    type: Progressing
+  observedGeneration: 11
+  readyReplicas: 3
+  replicas: 3
+  updatedReplicas: 3
